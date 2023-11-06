@@ -1,4 +1,5 @@
-import { component$, Slot } from "@builder.io/qwik";
+import { component$, Slot, useVisibleTask$ } from "@builder.io/qwik";
+import { initFlowbite } from "flowbite";
 import { routeLoader$ } from "@builder.io/qwik-city";
 import type { RequestHandler } from "@builder.io/qwik-city";
 
@@ -19,6 +20,10 @@ export const useServerTimeLoader = routeLoader$(() => {
 });
 
 export default component$(() => {
+  useVisibleTask$(() => {
+    initFlowbite();
+  });
+
   return (
     <>
       <Navbar />
