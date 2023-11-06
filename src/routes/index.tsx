@@ -1,6 +1,13 @@
-import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import {
+  component$,
+  useSignal,
+  useStyles$,
+  useVisibleTask$,
+} from "@builder.io/qwik";
 import { type DocumentHead, routeLoader$ } from "@builder.io/qwik-city";
 import Chart, { Colors } from "chart.js/auto";
+
+import styles from "./styles.css?inline";
 
 const ENDPOINT =
   "https://api.cloudflare.com/client/v4/accounts/00afccb96609b332b12ebafa18a20cd8/analytics_engine/sql";
@@ -32,6 +39,7 @@ export const useTemperatureData = routeLoader$(async ({ platform }) => {
 export default component$(() => {
   const chartContainer = useSignal<HTMLCanvasElement>();
   const temperatureData = useTemperatureData();
+  useStyles$(styles);
   useVisibleTask$(({ track }) => {
     track(() => chartContainer.value);
     if (!chartContainer.value) {
@@ -73,7 +81,7 @@ export default component$(() => {
   return (
     <>
       <div>
-        <canvas ref={chartContainer} width="600" height="400"></canvas>
+        <canvas ref={chartContainer}></canvas>
       </div>
     </>
   );
