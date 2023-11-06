@@ -49,6 +49,7 @@
     "wrangler": "^3.0.0"
   },
   "dependencies": {
+    "apexcharts": "^3.44.0",
     "cf-bindings-proxy": "^0.7.0",
     "chart.js": "^4.4.0",
     "flowbite": "^2.0.0",

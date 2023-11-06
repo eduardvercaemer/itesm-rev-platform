@@ -1,88 +1,63 @@
-import {
-  component$,
-  useSignal,
-  useStyles$,
-  useVisibleTask$,
-} from "@builder.io/qwik";
-import { type DocumentHead, routeLoader$ } from "@builder.io/qwik-city";
-import Chart, { Colors } from "chart.js/auto";
-
-import styles from "./styles.css?inline";
-
-const ENDPOINT =
-  "https://api.cloudflare.com/client/v4/accounts/00afccb96609b332b12ebafa18a20cd8/analytics_engine/sql";
-
-export const useTemperatureData = routeLoader$(async ({ platform }) => {
-  const query = `
-    SELECT toStartOfInterval(timestamp, INTERVAL '1' SECOND) AS time,
-           double1 AS t0,
-           double2 AS t1,
-           double3 AS t2
-    FROM   SENSORS
-    WHERE  index1 = 'b1'
-    AND    timestamp > NOW() - INTERVAL '1' HOUR
-  `;
-  return await fetch(ENDPOINT, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${platform.env?.API_TOKEN}`,
-    },
-    body: query,
-  })
-    .then((res) => res.json())
-    .then(
-      (json: any) =>
-        json.data as Array<{ time: string; t0: number; t1: number; t2: number }>
-    );
-});
+import { component$ } from "@builder.io/qwik";
+import { type DocumentHead } from "@builder.io/qwik-city";
 
 export default component$(() => {
-  const chartContainer = useSignal<HTMLCanvasElement>();
-  const temperatureData = useTemperatureData();
-  useStyles$(styles);
-  useVisibleTask$(({ track }) => {
-    track(() => chartContainer.value);
-    if (!chartContainer.value) {
-      return;
-    }
-
-    Chart.register(Colors);
-    new Chart(chartContainer.value, {
-      type: "line",
-      options: {
-        responsive: true,
-      },
-      data: {
-        labels: temperatureData.value.map(({ time }) => time),
-        datasets: [
-          {
-            label: "temperature 1",
-            data: temperatureData.value.map(({ t0 }) => t0),
-            fill: false,
-            tension: 0.1,
-          },
-          {
-            label: "temperature 2",
-            data: temperatureData.value.map(({ t1 }) => t1),
-            fill: false,
-            tension: 0.1,
-          },
-          {
-            label: "temperature 3",
-            data: temperatureData.value.map(({ t2 }) => t2),
-            fill: false,
-            tension: 0.1,
-          },
-        ],
-      },
-    });
-  });
-
   return (
     <>
-      <div>
-        <canvas ref={chartContainer}></canvas>
-      </div>
+      <section class="bg-white dark:bg-gray-900">
+        <div class="mx-auto grid max-w-screen-xl gap-8 px-4 py-8 lg:grid-cols-2 lg:gap-16 lg:py-16">
+          <div class="flex flex-col justify-center">
+            <h1 class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 dark:text-white md:text-5xl lg:text-6xl">
+              Bienvenidos al mundo de REV
+            </h1>
+            <p class="mb-8 text-lg font-normal text-gray-500 dark:text-gray-400 lg:text-xl">
+              Con más de 70 años de experiencia, Grupo REV nace como una empresa
+              familiar orgullosamente mexicana, especializados en fabricación y
+              comercialización de máscaras de látex y disfraces.
+            </p>
+            <div class="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
+              <a
+                href="#"
+                class="inline-flex items-center justify-center rounded-lg bg-blue-700 px-5 py-3 text-center text-base font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900"
+              >
+                Analizar sensores en tiempo real
+                <svg
+                  class="ml-2 h-3.5 w-3.5"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 14 10"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M1 5h12m0 0L9 1m4 4L9 9"
+                  />
+                </svg>
+              </a>
+              <a
+                href="https://gruporev.com/"
+                class="inline-flex items-center justify-center rounded-lg border border-gray-300 px-5 py-3 text-center text-base font-medium text-gray-900 hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-800"
+              >
+                Visitar sitio
+              </a>
+            </div>
+          </div>
+          <div>
+            <iframe
+              class="mx-auto h-64 w-full rounded-lg shadow-xl sm:h-96 lg:max-w-xl"
+              width="1280"
+              height="720"
+              src="https://www.youtube.com/embed/MuB7KRj0jPM"
+              title="CÓMO SE HACEN LAS MÁSCARAS DE TERROR ? Para Halloween 👻"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen={true}
+            ></iframe>
+          </div>
+        </div>
+      </section>
     </>
   );
 });

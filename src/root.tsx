@@ -5,21 +5,8 @@ import {
   ServiceWorkerRegister,
 } from "@builder.io/qwik-city";
 import { RouterHead } from "./components/router-head/router-head";
-import type {
-  R2Bucket,
-  D1Database,
-  AnalyticsEngineDataset,
-} from "@cloudflare/workers-types";
 
 import "./global.css";
-
-declare global {
-  interface QwikCityPlatform {
-    D1: D1Database;
-    R2: R2Bucket;
-    SENSORS: AnalyticsEngineDataset | null;
-  }
-}
 
 export default component$(() => {
   /**
@@ -28,7 +15,6 @@ export default component$(() => {
    *
    * Don't remove the `<head>` and `<body>` elements.
    */
-
   return (
     <QwikCityProvider>
       <head>
