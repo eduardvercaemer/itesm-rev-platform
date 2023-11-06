@@ -1,6 +1,6 @@
-import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import { component$ } from "@builder.io/qwik";
 import { routeLoader$ } from "@builder.io/qwik-city";
-import Chart, { Colors } from "chart.js/auto";
+import { SensorChart } from "~/components/sensor-chart/sensor-chart";
 
 const ENDPOINT =
   "https://api.cloudflare.com/client/v4/accounts/00afccb96609b332b12ebafa18a20cd8/analytics_engine/sql";
@@ -27,62 +27,41 @@ export const useTemperatureData = routeLoader$(async ({ platform }) => {
     body: query,
   })
     .then((res) => res.json())
-    .then(
-      (json: any) =>
-        json.data as Array<{
-          time: string;
-          t0: number;
-          t1: number;
-          t2: number;
-        }>,
-    );
+    .then((json: any) => {
+      return json.data as Array<{
+        time: string;
+        t0: number;
+        t1: number;
+        t2: number;
+      }>;
+    });
 });
 
 export default component$(() => {
   const temperatureData = useTemperatureData();
-  const chartContainer = useSignal<HTMLCanvasElement>();
-
-  useVisibleTask$(({ track }) => {
-    track(() => chartContainer.value);
-    if (!chartContainer.value) {
-      return;
-    }
-
-    Chart.register(Colors);
-    new Chart(chartContainer.value, {
-      type: "line",
-      options: {
-        responsive: true,
-      },
-      data: {
-        labels: temperatureData.value.map(({ time }) => time),
-        datasets: [
-          {
-            label: "temperature 1",
-            data: temperatureData.value.map(({ t0 }) => t0),
-            fill: false,
-            tension: 0.1,
-          },
-          {
-            label: "temperature 2",
-            data: temperatureData.value.map(({ t1 }) => t1),
-            fill: false,
-            tension: 0.1,
-          },
-          {
-            label: "temperature 3",
-            data: temperatureData.value.map(({ t2 }) => t2),
-            fill: false,
-            tension: 0.1,
-          },
-        ],
-      },
-    });
-  });
 
   return (
     <>
-      <canvas ref={chartContainer}></canvas>
+      <div class="flex flex-row flex-wrap justify-around gap-y-8">
+        <SensorChart
+          name="Sensor 1"
+          data={temperatureData.value.map((data) => data.t0)}
+          xAxis={temperatureData.value.map((data) => data.time)}
+          color="#D8FFDD"
+        />
+        <SensorChart
+          name="Sensor 2"
+          data={temperatureData.value.map((data) => data.t1)}
+          xAxis={temperatureData.value.map((data) => data.time)}
+          color="#85C7F2"
+        />
+        <SensorChart
+          name="Sensor 3"
+          data={temperatureData.value.map((data) => data.t2)}
+          xAxis={temperatureData.value.map((data) => data.time)}
+          color="#CAA8F5"
+        />
+      </div>
     </>
   );
 });
