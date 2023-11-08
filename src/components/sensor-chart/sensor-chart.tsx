@@ -1,4 +1,9 @@
-import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import {
+  type Signal,
+  component$,
+  useSignal,
+  useVisibleTask$,
+} from "@builder.io/qwik";
 import ApexCharts, { type ApexOptions } from "apexcharts";
 
 const chartOptions = {
@@ -68,26 +73,44 @@ export const SensorChart = component$(
   }: {
     color: string;
     name: string;
-    data: Array<number>;
-    xAxis: Array<string>;
+    data: Signal<Array<number>>;
+    xAxis: Signal<Array<Date>>;
   }) => {
     const chartElement = useSignal<HTMLDivElement>();
     useVisibleTask$(async ({ track }) => {
-      track(chartElement);
+      track(() => chartElement.value);
       if (!chartElement.value) return;
 
       const options = chartOptions;
       options.series = [
         {
           name,
-          data,
+          data: data.value,
           color,
         },
       ];
-      (options.xaxis as any).categories = xAxis;
+      (options.xaxis as any).categories = xAxis.value;
 
       const chart = new ApexCharts(chartElement.value, options);
       chart.render();
+      Object.assign(chartElement.value, { chart });
+    });
+    useVisibleTask$(({ track }) => {
+      track(() => data.value);
+      track(() => chartElement.value);
+      if (!chartElement.value) return;
+
+      const chart: ApexCharts = (chartElement.value as any).chart;
+      const options = chartOptions;
+      options.series = [
+        {
+          name,
+          data: data.value,
+          color,
+        },
+      ];
+      (options.xaxis as any).categories = xAxis.value;
+      chart.updateOptions(options, false);
     });
 
     return (

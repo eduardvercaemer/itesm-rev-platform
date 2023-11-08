@@ -1,5 +1,5 @@
 import { component$ } from "@builder.io/qwik";
-import { type DocumentHead } from "@builder.io/qwik-city";
+import { Link, type DocumentHead } from "@builder.io/qwik-city";
 
 export default component$(() => {
   return (
@@ -16,8 +16,8 @@ export default component$(() => {
               comercialización de máscaras de látex y disfraces.
             </p>
             <div class="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
-              <a
-                href="#"
+              <Link
+                href="/live-sensors"
                 class="inline-flex items-center justify-center rounded-lg bg-blue-700 px-5 py-3 text-center text-base font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900"
               >
                 Analizar sensores en tiempo real
@@ -36,7 +36,7 @@ export default component$(() => {
                     d="M1 5h12m0 0L9 1m4 4L9 9"
                   />
                 </svg>
-              </a>
+              </Link>
               <a
                 href="https://gruporev.com/"
                 class="inline-flex items-center justify-center rounded-lg border border-gray-300 px-5 py-3 text-center text-base font-medium text-gray-900 hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-800"
@@ -63,11 +63,11 @@ export default component$(() => {
 });
 
 export const head: DocumentHead = {
-  title: "Platform",
+  title: "Grupo REV",
   meta: [
     {
       name: "description",
-      content: "Temperature analytics graphs",
+      content: "Grupo REV",
     },
   ],
 };
