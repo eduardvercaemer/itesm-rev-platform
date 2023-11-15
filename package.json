@@ -23,6 +23,7 @@
     "preview": "qwik build preview && vite preview --open",
     "serve": "wrangler pages dev ./dist",
     "start": "vite --open --mode ssr",
+    "bindings": "cf-bindings-proxy --d1=DATA --kv=KV --r2=STORAGE",
     "pages:dev": "wrangler pages dev --compatibility-date=2023-10-30 -- pnpm run dev",
     "pages:deploy": "pnpm run build && wrangler pages deploy ./dist",
     "qwik": "qwik"
@@ -49,6 +50,7 @@
     "wrangler": "^3.0.0"
   },
   "dependencies": {
+    "@qwikest/icons": "^0.0.13",
     "apexcharts": "^3.44.0",
     "cf-bindings-proxy": "^0.7.0",
     "chart.js": "^4.4.0",

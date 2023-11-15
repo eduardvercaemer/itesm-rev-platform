@@ -29,27 +29,24 @@ const SELECTION_TO_INTERVAL = (selection: IntervalSelection) => {
 };
 
 const QUERY = (selection: IntervalSelection) => `
-    SELECT toStartOfInterval(timestamp, INTERVAL '1' SECOND) AS time,
-           double1 AS t0,
-           double2 AS t1,
-           double3 AS t2
-    FROM   SENSORS
-    WHERE  index1 = 'b1'
-    AND    timestamp > NOW() - INTERVAL ${SELECTION_TO_INTERVAL(selection)}
+    SELECT   toStartOfInterval(timestamp, INTERVAL '1' SECOND) AS time,
+             double1 AS t0,
+             double2 AS t1,
+             double3 AS t2
+    FROM     SENSORS
+    WHERE    index1 = 'b1'
+    AND      timestamp > NOW() - INTERVAL ${SELECTION_TO_INTERVAL(selection)}
+    ORDER BY time ASC
   `;
 
-async function query(
-  signal: AbortSignal,
-  apiToken: string,
-  selection: IntervalSelection,
-) {
+async function query(apiToken: string, selection: IntervalSelection) {
+  const body = QUERY(selection);
   return await fetch(ENDPOINT, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiToken}`,
     },
-    body: QUERY(selection),
-    signal,
+    body,
   })
     .then((res) => res.json())
     .then((json: any) => {
@@ -63,7 +60,6 @@ async function query(
 }
 
 export const getTimeseries = server$(async function (
-  signal: AbortSignal,
   selection: IntervalSelection,
 ) {
   if (!this.platform.env?.CF_PAGES) {
@@ -102,23 +98,34 @@ export const getTimeseries = server$(async function (
   }
 
   const apiToken = this.platform.env.API_TOKEN;
-  const data = await query(signal, apiToken, selection);
+  const data = await query(apiToken, selection);
   return { data };
+});
+
+export const saveTimeseries = server$(async function (
+  selection: IntervalSelection,
+) {
+  const { data } = await getTimeseries(selection);
+  const R2 = this.platform.R2;
+  const upload = await R2.put(
+    "/reports/" + Date.now().toString() + ".scv",
+    [
+      `time,t0,t1,t2`,
+      ...data.map((d) => `${d.time},${d.t0},${d.t1},${d.t2}`),
+    ].join("\n"),
+  );
 });
 
 export default component$(() => {
   const selection = useSignal(IntervalSelection.FIFTEEN_MINTUES);
   const timerReload = useSignal(0);
+  const saving = useSignal(false);
   const data =
     useSignal<{ t0: number; t1: number; t2: number; time: Date }[]>();
-  useVisibleTask$(async ({ track, cleanup }) => {
+  useVisibleTask$(async ({ track }) => {
     track(() => selection.value);
     track(() => timerReload.value);
-    const controller = new AbortController();
-    cleanup(() => {
-      controller.abort();
-    });
-    data.value = (await getTimeseries(controller.signal, selection.value)).data;
+    data.value = (await getTimeseries(selection.value)).data;
   });
   useVisibleTask$(async ({ track, cleanup }) => {
     track(() => selection.value);
@@ -143,8 +150,14 @@ export default component$(() => {
         <div>
           <IntervalSelectionBar
             selection={selection.value}
+            disableExport={saving}
             setSelection$={(newSelection) => {
               selection.value = newSelection;
+            }}
+            export$={async () => {
+              saving.value = true;
+              await saveTimeseries(selection.value);
+              saving.value = false;
             }}
           />
         </div>
