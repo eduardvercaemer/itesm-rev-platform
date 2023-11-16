@@ -190,8 +190,8 @@ export default component$(() => {
             }}
           />
         </div>
-        <div class="mx-auto flex flex-col">
-          <div class="flex flex-row flex-wrap justify-around gap-y-8">
+        <div class="mx-auto flex flex-col gap-8">
+          <div class="flex flex-row flex-wrap justify-around gap-x-4 gap-y-8">
             <SensorChart
               name="Temperatura Interior 1"
               data={seriesTi0}
@@ -211,7 +211,7 @@ export default component$(() => {
               color="#CAA8F5"
             />
           </div>
-          <div class="flex flex-row flex-wrap justify-around gap-y-8">
+          <div class="flex flex-row flex-wrap justify-around gap-x-4 gap-y-8">
             <SensorChart
               name="Temperatura Interior 2"
               data={seriesTi1}
@@ -231,7 +231,7 @@ export default component$(() => {
               color="#CAA8F5"
             />
           </div>
-          <div class="flex flex-row flex-wrap justify-around gap-y-8">
+          <div class="flex flex-row flex-wrap justify-around gap-x-4 gap-y-8">
             <SensorChart
               name="Temperatura Interior 3"
               data={seriesTi2}
