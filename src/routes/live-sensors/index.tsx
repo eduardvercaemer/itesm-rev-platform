@@ -80,9 +80,11 @@ export const getTimeseries = server$(async function (
   selection: IntervalSelection,
 ) {
   if (!this.platform.env?.CF_PAGES) {
-    const gen = () => {
+    const gen = (off: number) => {
+      const now = Date.now();
+      const date = now + off * 10;
       return {
-        time: new Date(),
+        time: new Date(date),
         ti0: Math.random() * 20,
         te0: Math.random() * 20,
         h0: Math.random() * 20,
@@ -95,28 +97,7 @@ export const getTimeseries = server$(async function (
       };
     };
     return {
-      data: [
-        gen(),
-        gen(),
-        gen(),
-        gen(),
-        gen(),
-        gen(),
-        gen(),
-        gen(),
-        gen(),
-        gen(),
-        gen(),
-        gen(),
-        gen(),
-        gen(),
-        gen(),
-        gen(),
-        gen(),
-        gen(),
-        gen(),
-        gen(),
-      ],
+      data: [gen(0), gen(1), gen(2), gen(3), gen(4), gen(5), gen(6), gen(7)],
     };
   }
 

@@ -45,19 +45,7 @@ const chartOptions = {
     show: false,
   },
   xaxis: {
-    labels: {
-      show: false,
-      style: {
-        fontFamily: "Inter, sans-serif",
-        cssClass: "text-xs font-normal fill-gray-500 dark:fill-gray-400",
-      },
-    },
-    axisBorder: {
-      show: false,
-    },
-    axisTicks: {
-      show: false,
-    },
+    type: "datetime",
   },
   yaxis: {
     show: false,
@@ -82,13 +70,7 @@ export const SensorChart = component$(
       if (!chartElement.value) return;
 
       const options = chartOptions;
-      options.series = [
-        {
-          name,
-          data: data.value,
-          color,
-        },
-      ];
+      options.series = [];
       (options.xaxis as any).categories = xAxis.value;
 
       const chart = new ApexCharts(chartElement.value, options);
@@ -101,16 +83,16 @@ export const SensorChart = component$(
       if (!chartElement.value) return;
 
       const chart: ApexCharts = (chartElement.value as any).chart;
-      const options = chartOptions;
-      options.series = [
+      const newSeries = data.value.map((data, i) => ({
+        x: xAxis.value[i].getTime(),
+        y: data,
+      }));
+      chart.updateSeries([
         {
-          name,
-          data: data.value,
           color,
+          data: newSeries,
         },
-      ];
-      (options.xaxis as any).categories = xAxis.value;
-      chart.updateOptions(options, false);
+      ]);
     });
 
     return (
