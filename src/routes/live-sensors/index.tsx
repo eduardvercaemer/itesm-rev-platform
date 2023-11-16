@@ -118,6 +118,7 @@ export const saveTimeseries = server$(async function (
       ...data.map((d) => `${d.time},${d.t0},${d.t1},${d.t2}`),
     ].join("\n"),
   );
+  console.info({ upload });
 });
 
 export default component$(() => {
