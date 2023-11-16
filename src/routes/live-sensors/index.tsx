@@ -72,7 +72,10 @@ async function query(apiToken: string, selection: IntervalSelection) {
     .then((res) => res.json())
     .then((json: any) => {
       console.log("Query response", json);
-      return json.data as Array<DataPoint>;
+      return json.data.map((datapoint: any) => {
+        datapoint.time = new Date(datapoint.time);
+        return datapoint;
+      }) as Array<DataPoint>;
     });
 }
 
