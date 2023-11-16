@@ -120,7 +120,7 @@ export const SensorChart = component$(
             {name}
           </h5>
 
-          <div id="line-chart" ref={chartElement}></div>
+          <div ref={chartElement}></div>
         </div>
       </>
     );
