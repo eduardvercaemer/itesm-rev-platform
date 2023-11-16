@@ -30,17 +30,19 @@ const SELECTION_TO_INTERVAL = (selection: IntervalSelection) => {
 
 const QUERY = (selection: IntervalSelection) => `
     SELECT   toStartOfInterval(timestamp, INTERVAL '1' SECOND) AS time,
-             double1 AS t0,
-             double2 AS t1,
-             double3 AS t2
+             sum(double1 * _sample_interval) AS t0,
+             sum(double2 * _sample_interval) AS t1,
+             sum(double3 * _sample_interval) AS t2
     FROM     SENSORS
     WHERE    index1 = 'b1'
     AND      timestamp > NOW() - INTERVAL ${SELECTION_TO_INTERVAL(selection)}
+    GROUP BY time
     ORDER BY time ASC
   `;
 
 async function query(apiToken: string, selection: IntervalSelection) {
   const body = QUERY(selection);
+  console.log("Running query", body);
   return await fetch(ENDPOINT, {
     method: "POST",
     headers: {
@@ -50,6 +52,7 @@ async function query(apiToken: string, selection: IntervalSelection) {
   })
     .then((res) => res.json())
     .then((json: any) => {
+      console.log("Query response", json);
       return json.data as Array<{
         time: Date;
         t0: number;
@@ -107,6 +110,7 @@ export const saveTimeseries = server$(async function (
 ) {
   const { data } = await getTimeseries(selection);
   const R2 = this.platform.R2;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const upload = await R2.put(
     "/reports/" + Date.now().toString() + ".scv",
     [
