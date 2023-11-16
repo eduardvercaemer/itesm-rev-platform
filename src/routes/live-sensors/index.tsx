@@ -112,7 +112,7 @@ export const saveTimeseries = server$(async function (
   const R2 = this.platform.R2;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const upload = await R2.put(
-    "/reports/" + Date.now().toString() + ".scv",
+    Date.now().toString() + ".csv",
     [
       `time,t0,t1,t2`,
       ...data.map((d) => `${d.time},${d.t0},${d.t1},${d.t2}`),
