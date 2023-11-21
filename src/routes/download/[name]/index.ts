@@ -11,6 +11,23 @@ export const onGet: RequestHandler = async ({
   if (file === null) {
     throw error(404, `File not found: ${name}`);
   }
-  const buffer = await file.arrayBuffer();
-  send(200, Buffer.from(buffer));
+
+  // Convert ArrayBuffer stream to Uint8Array stream.
+  const readableStream = file.body as ReadableStream<ArrayBuffer>;
+  const { writable, readable } = new TransformStream({
+    transform: (chunk: ArrayBuffer, controller) => {
+      controller.enqueue(new Uint8Array(chunk));
+    },
+  });
+  readableStream.pipeTo(writable);
+
+  send(
+    new Response(readable, {
+      status: 200,
+      headers: new Headers({
+        "Content-Type":
+          file.httpMetadata?.contentType ?? "application/octet-stream",
+      }),
+    }),
+  );
 };
