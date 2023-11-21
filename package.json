@@ -26,6 +26,7 @@
     "bindings": "cf-bindings-proxy --d1=DATA --kv=KV --r2=STORAGE",
     "pages:dev": "wrangler pages dev --compatibility-date=2023-10-30 -- pnpm run dev",
     "pages:deploy": "pnpm run build && wrangler pages deploy ./dist",
+    "pages:tail": "wrangler pages deployment tail --project-name rev",
     "qwik": "qwik"
   },
   "devDependencies": {
